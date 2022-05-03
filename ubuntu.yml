@@ -34,6 +34,8 @@
           - mtr
           - pgadmin4-desktop
           - snapd
+          - gedit
+          - gdebi
       
     - name: Installing Snap Apps
       become: true
