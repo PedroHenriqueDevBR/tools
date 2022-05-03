@@ -39,7 +39,7 @@
       
     - name: Installing Snap Apps
       become: true
-      community.general.snap:
+      snap:
         name:
           - beekeeper-studio
           - figma-linux
