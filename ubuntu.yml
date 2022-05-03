@@ -32,6 +32,21 @@
           - mlocate
           - jq
           - mtr
+          - pgadmin4-desktop
+          - snapd
+      
+    - name: Installing Snap Apps
+      become: true
+      community.general.snap:
+        name:
+          - beekeeper-studio
+          - figma-linux
+          - drawio
+          - flutter
+          - insomnia
+          - kdenlive
+          - remmina
+          - sqlitebrowser
 
     - block:
       - name: Verify if Oh-My-zsh is installed
@@ -187,7 +202,7 @@
           path: /home/{{ ansible_user_id }}/.zshrc
           regexp: '^plugins='
           line: 'plugins=(git docker docker-compose)'
-          
+
     - block:
       - name: Adding Peek Repository
         become: true
