@@ -32,11 +32,10 @@
           - mlocate
           - jq
           - mtr
-          - pgadmin4-desktop
           - snapd
           - gedit
           - gdebi
-      
+
     - name: Installing Snap Apps
       become: true
       snap:
@@ -44,7 +43,6 @@
           - beekeeper-studio
           - figma-linux
           - drawio
-          - flutter
           - insomnia
           - kdenlive
           - remmina
@@ -146,21 +144,6 @@
         become: true
         apt:
           name: code
-      - name: Install Virtual Studio Code Extensions
-        shell:
-          cmd: code --install-extension '{{ item }}' 
-        loop: 
-          - ms-python.python
-          - ms-azuretools.vscode-docker
-          - bbenoist.vagrant
-          - gruntfuggly.todo-tree
-          - njpwerner.autodocstring
-          - wesbos.theme-cobalt2
-          - Dart-Code.dart-code
-          - Dart-Code.flutter
-          - hzgood.dart-data-class-generator
-          - silofy.hackthebox
-          - PKief.material-icon-theme
 
     - block: 
       - name: Install Docker Key
@@ -225,13 +208,3 @@
         become: true
         apt:
           name: obs-studio
-
-    - block:
-      - name: Adding Ulauncher Repository
-        become: true
-        apt_repository:
-          repo: 'ppa:agornostal/ulauncher'
-      - name: Install Ulauncher
-        become: true
-        apt:
-          name: ulauncher
