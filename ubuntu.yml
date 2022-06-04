@@ -27,7 +27,6 @@
           - zsh
           - flameshot
           - fonts-hack
-          - tilix
           - virtualbox
           - mlocate
           - jq
@@ -35,6 +34,12 @@
           - snapd
           - gedit
           - gdebi
+          - clang
+          - cmake
+          - ninja-build
+          - pkg-config
+          - libgtk-3-dev
+          - liblzma-dev
 
     - name: Installing Snap Apps
       become: true
@@ -48,6 +53,19 @@
           - remmina
           - sqlitebrowser
           - audacity
+          - obs-studio
+    
+    - name: Installing Snap Flutter
+      become: true
+      snap:
+        name: flutter
+        classic: yes
+    
+    - name: Installing Snap VSCode
+      become: true
+      snap:
+        name: code
+        classic: yes
 
     - block:
       - name: Verify if Oh-My-zsh is installed
@@ -127,84 +145,46 @@
         become: true
         apt:
           name: google-cloud-sdk
-          
-    - block:
-      - name: Install Microsoft Key
-        become: true
-        apt_key:
-          url: 'https://packages.microsoft.com/keys/microsoft.asc'
-          state: present
-      - name: Install VSCode Repository
-        become: true
-        apt_repository:
-          repo: 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main'
-          state: present
-          filename: vscode
-      - name: Install Visual Studio Code
-        become: true
-        apt:
-          name: code
 
     - block: 
-      - name: Install Docker Key
+      - name: Install aptitude
+        become: true
+        apt:
+          name: aptitude
+          state: latest
+          update_cache: true
+
+      - name: Install required system packages
+        become: true
+        apt:
+          pkg:
+            - software-properties-common
+            - virtualenv
+            - python3-setuptools
+          state: latest
+          update_cache: true
+
+      - name: Add Docker GPG apt Key
         become: true
         apt_key:
-          url: 'https://download.docker.com/linux/ubuntu/gpg'
+          url: https://download.docker.com/linux/ubuntu/gpg
           state: present
-      - name: Install Docker Repository
+
+      - name: Add Docker Repository
         become: true
         apt_repository:
-          repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+          repo: deb https://download.docker.com/linux/ubuntu focal stable
           state: present
-          filename: docker-ce
-      - name: Install Docker
+
+      - name: Update apt and install docker-ce
         become: true
         apt:
           name: docker-ce
-      - name: Adding existing user to group Docker
-        become: yes
-        user: 
-          name: '{{ ansible_user_id }}'
-          groups: docker 
-          append: yes
-      - name: Install Docker-Compose
-        become: true
-        get_url:
-          url: 'https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64'
-          dest: '/usr/local/bin/docker-compose'
-          mode: 755
-      - name: Install Docker Machine Bash Completion
-        become: true
-        get_url:
-          url: 'https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash'
-          dest: '/etc/bash_completion.d/docker-machine'
-      - name: Install Docker-Compose Bash Completion
-        become: true
-        get_url:
-          url: 'https://raw.githubusercontent.com/docker/compose/1.26.2/contrib/completion/bash/docker-compose'
-          dest: '/etc/bash_completion.d/docker-compose'
-      - name: Install Docker-Compose and Docker Machine Zsh Completion
-        lineinfile:
-          path: /home/{{ ansible_user_id }}/.zshrc
-          regexp: '^plugins='
-          line: 'plugins=(git docker docker-compose)'
+          state: latest
+          update_cache: true
 
-    - block:
-      - name: Adding Peek Repository
+      - name: Install Docker Module for Python
         become: true
-        apt_repository:
-          repo: 'ppa:peek-developers/stable'
-      - name: Install Peek
-        become: true
-        apt:
-          name: peek
+        pip:
+          name: docker
 
-    - block:
-      - name: Install obsproject Ubuntu Repo
-        become: true
-        apt_repository:
-          repo: 'ppa:obsproject/obs-studio'
-      - name: Install obs Studio
-        become: true
-        apt:
-          name: obs-studio
