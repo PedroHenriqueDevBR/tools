@@ -1,0 +1,74 @@
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  tasks:
+  
+  - name: Install docker packages
+    apt:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    tags:
+      - docker
+  
+  - name: Add Docker s official GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+    tags:
+      - docker
+  
+  - name: Verify that we have the key with the fingerprint
+    apt_key:
+      id: 0EBFCD88
+      state: present
+    tags:
+      - docker
+  
+  - name: Set up the stable repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+      state: present
+      update_cache: yes
+    tags:
+      - docker
+  
+  - name: Update apt packages
+    apt:
+      update_cache: yes
+    tags:
+      - docker
+  
+  - name: Install docker
+    apt:
+      name: docker-ce
+      state: present
+      update_cache: yes
+    tags:
+      - docker
+
+  - name: Install docker-ce-cli
+    apt:
+      name: docker-ce-cli
+      state: present
+    tags:
+      - docker
+
+  - name: Install docker-ce-cli
+    apt:
+      name: containerd.io
+      state: present
+    tags:
+      - docker
+  
+  - name: Install docker-compose-plugin
+    apt:
+      name: docker-compose-plugin
+      state: present
+    tags:
+      - docker
