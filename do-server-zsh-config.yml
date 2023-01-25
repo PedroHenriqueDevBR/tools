@@ -1,0 +1,38 @@
+---
+- name: Configurando ZSH
+  hosts: apps
+  remote_user: pedro
+  become: yes
+  become_method: sudo
+
+  # Trocando de Bash para ZSH
+  tasks:
+
+    - block:
+      - name: Verificando instalação do ZSH
+        command: test -d /home/pedro/.oh-my-zsh
+        register: ohmyzsh
+        ignore_errors: true
+      
+      - name: Instalando Oh-My-zsh
+        shell:
+          cmd: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+          warn: false
+        when: ohmyzsh.rc != 0
+      
+      - name: Tornando ZSH padrão no Shell
+        user: 
+          name: pedro
+          shell: /bin/zsh 
+
+      - name: Criando diretório para ZSH Completion
+        file:
+          path: /home/pedro/.oh-my-zsh/completions
+          state: directory
+          mode: 0755
+
+      - name: adicoinando autoload ao compinit
+        lineinfile:
+          path: /home/pedro/.zshrc
+          line: 'autoload -U compinit && compinit'
+          state: present
