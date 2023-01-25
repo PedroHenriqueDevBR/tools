@@ -45,6 +45,13 @@
       pip:
         name: docker
 
-    # Instalando ZSH
+    - name: Instalar Docker Compose
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+
+    # Trocando de Bash para ZSH
     - name: Instalar dependencias do ZSH
       apt: name=zsh state=latest update_cache=yes install_recommends=yes
